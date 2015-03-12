@@ -1,0 +1,6 @@
+caching   Demo to describe use of fingerprint caching
+msim  Illustration to show use of msim algorithm
+rsim  Illustration to show use of rsim algorithm
+standardize Example to show use of standardization (removal of explicit H-atoms)
+sim.matrix  Example to compute similarity among reactions in a list
+masking Example to demonstrate use of masking

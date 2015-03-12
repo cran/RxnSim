@@ -1,0 +1,16 @@
+Package: RxnSim
+Type: Package
+Title: Functions to Compute Chemical Reaction Similarity
+Version: 1.0
+Date: 2015-03-12
+Authors@R: person("Varun", "Giri", role=c("aut", "cre"), email="varungiri@gmail.com")
+Maintainer: Varun Giri <varungiri@gmail.com>
+Description: RxnSim provides methods to compute chemical similarity between two or more reactions and molecules. Molecular similarity is computed based on structural features. Reaction similarity is a function of similarities of participating molecules. The package additionally provides functionality to mask chemical substructures for weighted similarity computations. It uses rCDK and fingerprint packages for cheminformatics functionality. 
+License: GPL
+Depends: R (>= 2.5.0)
+Imports: rJava, fingerprint, rcdk (>= 3.3.2)
+Packaged: 2015-03-12 07:21:27 UTC; varungiri
+Author: Varun Giri [aut, cre]
+NeedsCompilation: no
+Repository: CRAN
+Date/Publication: 2015-03-12 09:37:28

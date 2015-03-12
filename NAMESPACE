@@ -1,0 +1,3 @@
+exportPattern("^[m,r]s\\.[[:alpha:]]+")
+import (rJava)
+import (rcdk)
