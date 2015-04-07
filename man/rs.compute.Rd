@@ -132,7 +132,7 @@ Varun Giri \email{varungiri@gmail.com}
 }
 
 \references{
-^ Carbonell, P., Planson, A-G., Fichera, D., & Faulon J-L. (2011). A retrosynthetic biology approach to metabolic pathway design for therapeutic production. \emph{BMC Systems Biology}, \bold{5}:122.
+^ Carbonell, P., Planson, A-G., Fichera, D., & Faulon J-L. (2011) A retrosynthetic biology approach to metabolic pathway design for therapeutic production. \emph{BMC Systems Biology}, \bold{5}:122.
 }
 
 \seealso{

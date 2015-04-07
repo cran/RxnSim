@@ -1,18 +1,18 @@
-.global.env <- new.env()
-.javaObj.env <- new.env()
-.fp.env <- new.env()
+.global.env <- new.env(parent = emptyenv())
+.javaObj.env <- new.env(parent = emptyenv())
+.fp.env <- new.env(parent = emptyenv())
 
 .onAttach <- function(libname, pkgname) {
   .javaObj.env$rs_parser <- rcdk::get.smiles.parser()
   .javaObj.env$smilesGen <- .jnew ('org.openscience.cdk.smiles.SmilesGenerator')
   .javaObj.env$acm <- 'org.openscience.cdk.tools.manipulator.AtomContainerManipulator'
-  .fp.env$fp_map <- new.env(hash = T)
+  .fp.env$fp_map <- new.env(parent = emptyenv(), hash = T)
   .global.env$DefaultDB <- paste(libname, pkgname, 'DB/Metadata.txt', sep = '/')
-  .global.env$Rheav59 <- paste(libname, pkgname, 'DB/RheaData_v59.txt', sep = '/')
+  .global.env$Rheav60 <- paste(libname, pkgname, 'DB/RheaData_v60.txt', sep = '/')
 }
 
 rs.clearCache <- function () {
-  .fp.env$fp_map <- new.env(hash = T)
+  .fp.env$fp_map <- new.env(parent = emptyenv(), hash = T)
 }
 
 ms.compute <- function (molA, molB, format = 'smiles', standardize = T, explicitH = F, sim.method = 'tanimoto',
@@ -292,8 +292,8 @@ rs.makeDB <- function (txtFile, header = F, sep = '\t', standardize = T, explici
   fp.mode <- tolower(fp.mode)
   
   if (missing(txtFile)) {
-    msg <- paste ("DB text file not provided, using sample DB (extracted from Rhea v.59).\n",
-                  "For complete dataset use: ", .global.env$Rheav59, sep = '')
+    msg <- paste ("DB text file not provided, using sample DB (extracted from Rhea v.60).\n",
+                  "For complete dataset use: ", .global.env$Rheav60, sep = '')
     warning(msg, call. = F, immediate. = T)
     txtFile <- .global.env$DefaultDB
   }
@@ -301,8 +301,6 @@ rs.makeDB <- function (txtFile, header = F, sep = '\t', standardize = T, explici
   .fpTypeCheck(fp.type, fp.mode)
   
   if (useMask == T) {
-    #standardize = T
-    explicitH = F
     if (missing(maskStructure) || maskStructure == '') {
       stop('Enter a structure to mask in form of a SMILES or SMARTS.', call. = F)
     }
@@ -310,8 +308,10 @@ rs.makeDB <- function (txtFile, header = F, sep = '\t', standardize = T, explici
   
   DB <- NULL
   tryCatch({
-    DB <- read.delim(txtFile, header=header, sep=sep, strip.white=T)
+    #DB <- read.delim(txtFile, header=header, sep=sep, strip.white=T)
+    DB <- data.table::fread(txtFile, header=header, sep=sep, data.table=F)
     colnames(DB) <- c('EC', 'ID', 'RSMI')
+    
     rxnObjList <- lapply(as.character(DB$RSMI), .rsmiParser, standardize, explicitH)
     if (useMask == T) {
       rxnObjList <- lapply(rxnObjList, .rct.mask, substructure = maskStructure, mask = mask, recursive = recursive)
@@ -319,15 +319,22 @@ rs.makeDB <- function (txtFile, header = F, sep = '\t', standardize = T, explici
       DB <- cbind(DB, MaskedRSMI)
     }
     
-    fp_map_cache <- new.env(hash = T)
+    fp_map_cache <- new.env(parent = emptyenv(), hash = T)
     fpList <- list()
+    len <- 0
     for (obj in rxnObjList) {
       fp_r <- lapply (obj$Reactants, .makeFP, fp.type = fp.type, fp.mode = fp.mode,
                        fp.depth = fp.depth, fp.size = fp.size, fp_map_cache)
       fp_p <- lapply (obj$Products, .makeFP, fp.type = fp.type, fp.mode = fp.mode,
                        fp.depth = fp.depth, fp.size = fp.size, fp_map_cache)
       
-      fpList[[length(fpList) + 1]] <- list(FPR = fp_r, FPP = fp_p)
+      if (sum(sapply(c(fp_r, fp_p), function(x) {if(is.null(x)){1} else {0}}))) {
+        message(paste('Skipping reaction -', DB$ID[[len+1]], '- could not generate fingerprints.'))
+        DB <- DB[-(len+1),]
+      } else {
+        len <- len + 1
+        fpList[[len]] <- list(FPR = fp_r, FPP = fp_p)
+      }
     }
     list(Data = DB, FP = fpList, standardize = standardize, explicitH = explicitH, fp.type = fp.type,
          fp.mode = fp.mode, fp.depth = fp.depth, fp.size = fp.size)
@@ -378,17 +385,29 @@ rs.compute.DB <- function (rxnA, DB, format = 'rsmi', ecrange = '*', reversible 
                      fp.depth = DB$fp.depth, fp.size = DB$fp.size, cache)
     fp_p <- lapply (rct$Products, .makeFP, fp.type = DB$fp.type, fp.mode = DB$fp.mode,
                      fp.depth = DB$fp.depth, fp.size = DB$fp.size, cache)
-    
-    resDF <- as.data.frame(setNames(replicate(length(DB$Data)+1,numeric(0), simplify = F), c(colnames(DB$Data),'SIMILARITY')))
-    
+        
     ecrange <- gsub('\\.', '\\\\\\.', ecrange)
     ecrange <- gsub('\\*', '.*', ecrange)
     
-    for (itr in grep(paste('^', ecrange, sep = ''), DB$Data$EC)) {
-      sim <- .calcSimilarity (fp_r, fp_p, DB$FP[[itr]]$FPR, DB$FP[[itr]]$FPP, reversible, algo, sim.method)
-      res <- data.frame(DB$Data[itr,], SIMILARITY = sim)
-      resDF <- rbind(resDF, res)
+    #resDF <- as.data.frame(setNames(replicate(length(DB$Data)+1,numeric(0), simplify = F), c(colnames(DB$Data),'SIMILARITY')))
+    #for (itr in grep(paste('^', ecrange, sep = ''), DB$Data$EC)) {
+    #  sim <- .calcSimilarity (fp_r, fp_p, DB$FP[[itr]]$FPR, DB$FP[[itr]]$FPP, reversible, algo, sim.method)
+    #  res <- data.frame(DB$Data[itr,], SIMILARITY = sim)
+    #  resDF <- rbind(resDF, res)
+    #}
+    
+    ECs <- grep(paste('^', ecrange, sep = ''), DB$Data$EC)
+    resDF <- DB$Data[ECs, ]
+    FPs <- DB$FP[ECs]
+    SIM <- list()
+    for (itr in (1:nrow(resDF))) {
+      SIM[itr] <- .calcSimilarity (fp_r, fp_p, FPs[[itr]]$FPR, FPs[[itr]]$FPP, reversible, algo, sim.method)
     }
+    #SIM <- lapply(FPs, function(FP, fp_r, fp_p, reversible, algo, sim.method) {.calcSimilarity (fp_r, fp_p, FP$FPR, FP$FPP, reversible, algo, sim.method)}, fp_r, fp_p, reversible, algo, sim.method)
+    
+    resDF$'SIMILARITY' <- as.numeric(SIM)
+    
+    
     if (sort) {
       resDF <- resDF[order(-resDF$SIMILARITY),]
     }

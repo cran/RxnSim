@@ -33,7 +33,7 @@
   smi <- tryCatch({
     while(1) {
       if (mask != '') {
-        maskX <- .smilesParser(mask, standardize = T, explicitH = F)
+        maskX <- .smilesParser(mask, F, F)
       } else {
         maskX <- NULL
       }
@@ -41,8 +41,8 @@
       tryCatch({
         map <- rcdk::matches(substructure, mol, return.matches = T)
       }, error = function(err) {
-        #stop('Unable to find matches.', call. = F)
-        stop(err)
+        stop('Unable to find matches.', call. = F)
+        #stop(err)
       })
       if (map[[1]]$match == TRUE) {
         .mask(mol, map[[1]], maskX)
@@ -61,7 +61,7 @@
   return(smi)
 }
 
-ms.mask <- function (substructure, mask, molecule, format = 'smiles', recursive = F) {
+ms.mask <- function (substructure, mask, molecule, format = 'smiles', standardize = T, explicitH = F, recursive = F) {
   if(missing(substructure) || substructure == '') {
     stop('Enter a structure to mask in form of a SMILES or SMARTS.', call. = F)
   }
@@ -77,9 +77,9 @@ ms.mask <- function (substructure, mask, molecule, format = 'smiles', recursive 
   
   smi <- tryCatch({    
     if (format[[1]] == 'smiles') {
-      mol <- .smilesParser(molecule, standardize = T, explicitH = F)
+      mol <- .smilesParser(molecule, standardize = standardize, explicitH = explicitH)
     } else if (format[[1]] == 'mol') {
-      mol <- .molParser(molecule, standardize = T, explicitH = F)
+      mol <- .molParser(molecule, standardize = standardize, explicitH = explicitH)
     } else {
       stop("Invalid input format.", call. = F)
     }
@@ -120,7 +120,7 @@ ms.mask <- function (substructure, mask, molecule, format = 'smiles', recursive 
   return(rct)
 }
 
-rs.mask <- function (substructure, mask, reaction, format = 'rsmi', recursive = F) {
+rs.mask <- function (substructure, mask, reaction, format = 'rsmi', standardize = T, explicitH = F, recursive = F) {
   if(missing(substructure) || substructure == '') {
     stop('Enter a structure to mask in form of a SMILES or SMARTS.', call. = F)
   }
@@ -135,9 +135,9 @@ rs.mask <- function (substructure, mask, reaction, format = 'rsmi', recursive = 
   
   rsmi <- tryCatch({
     if (format[[1]] == 'rsmi') {
-      rct <- .rsmiParser(reaction, standardize = T, explicitH = F)
+      rct <- .rsmiParser(reaction, standardize = standardize, explicitH = explicitH)
     } else if (format[[1]] == 'rxn') {
-      rct <- .mdlParser(reaction, standardize = T, explicitH = F)
+      rct <- .mdlParser(reaction, standardize = standardize, explicitH = explicitH)
     } else {
       stop("Invalid input format.", call. = F)
     }

@@ -11,8 +11,10 @@ Replaces a sub-structure, provided as SMILES or SMARTS, with the given mask.\cr
 }
 
 \usage{
-rs.mask (substructure, mask, reaction, format = 'rsmi', recursive = F)
-ms.mask (substructure, mask, molecule, format = 'smiles', recursive = F)
+rs.mask (substructure, mask, reaction, format = 'rsmi', standardize = T,
+         explicitH = F, recursive = F)
+ms.mask (substructure, mask, molecule, format = 'smiles', standardize = T,
+         explicitH = F, recursive = F)
 }
 
 \arguments{
@@ -21,6 +23,8 @@ ms.mask (substructure, mask, molecule, format = 'smiles', recursive = F)
   \item{reaction}{Input reaction to be processed.}
   \item{molecule}{Input molecule to be processed.}
   \item{format}{specifies format of input reaction/molecule. It can be one of following for a reaction: 'RSMI' or 'RXN'; for a molecule: 'SMILES' or 'MOL'.}
+  \item{standardize}{suppresses all explicit hydrogen if set as \code{TRUE} (default).}
+  \item{explicitH}{converts all implicit hydrogen to explicit if set as \code{TRUE}. It is set as \code{FALSE} by default.}
   \item{recursive}{if TRUE, all the occurrences of input sub-structure are replaced.}
 }
 

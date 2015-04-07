@@ -44,11 +44,11 @@ The input text file should contain following three fields, separated with  \code
 [EC Number] \tab [Reaction Name] \tab [Reaction SMILES (RSMI)]
 }
 
-The package comes with a sample reaction database file extracted from Rhea database (v59). If no \code{textfile} is provided, default database file is used:
+The package comes with a sample reaction database file extracted from Rhea database (Morgat et al., 2015). If no \code{textfile} is provided, default database file is used:
 \preformatted{
 rs.makeDB()
 }
-A larger dataset containing all reactions from Rhea database (v59) is also provided with the package. While parsing this file you may encounter following error from CDK library:
+A larger dataset containing all reactions from Rhea database (v.60) is also provided with the package. While parsing this file you may encounter following error from CDK library:
 \preformatted{
 "Java-Object{org.openscience.cdk.exception.CDKException: Too many paths generate.
 We're working making this faster but for now try generating paths with a smaller length}"
@@ -58,6 +58,10 @@ Retry by chosing a smaller fingerprint search depth (\code{fp.depth}).
 
 \author{
 Varun Giri \email{varungiri@gmail.com}
+}
+
+\references{
+Morgat, A., Axelsen, K.B., Lombardot, T., Alcantara, R., Aimo, L., Zerara, M., Niknejad, A., Belda, E., Hyka-Nouspikel, N., Coudert, E., Redaschi, N., Bougueleret, L., Steinbeck, C., Xenarios, I., Bridge, A. (2015) Updates in Rhea - a manually curated resource of biochemical reactions. \emph{Nucleic Acids Research}, \bold{43}:D459-D464; doi: 10.1093/nar/gku961
 }
 
 \seealso{

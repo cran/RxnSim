@@ -151,6 +151,10 @@
     for (mol in Reacts) {
       .jcall(.javaObj.env$acm, "V", "percieveAtomTypesAndConfigureAtoms", mol)
     }
+    for (mol in Prods) {
+      .jcall(.javaObj.env$acm, "V", "percieveAtomTypesAndConfigureAtoms", mol)
+    }
+    
     if (standardize) {
       for (mol in Reacts) {
         .jcall(.javaObj.env$acm, 'Lorg/openscience/cdk/interfaces/IAtomContainer;', 
@@ -194,7 +198,21 @@
   fpB_p <- lapply (rxnB$Products, .makeFP, fp.type = fp.type, fp.mode = fp.mode,
                    fp.depth = fp.depth, fp.size = fp.size, cache)
   
-  .calcSimilarity (fpA_r, fpA_p, fpB_r, fpB_p, reversible, algo, sim.method, verbose)
+  if (sum(sapply(c(fpA_r, fpA_p, fpB_r, fpB_p), function(x) {if(is.null(x)){1} else {0}}))) {
+    warning('Could not generate fingerprints. Try reducing fingerprint search depth.', call. = F)
+    NaN
+  }
+  else {
+    smi <- new.env(parent = emptyenv())
+    if (verbose) {
+      smi$A_r <- lapply(rxnA$Reactants, get.smiles)
+      smi$A_p <- lapply(rxnA$Products, get.smiles)
+      smi$B_r <- lapply(rxnA$Reactants, get.smiles)
+      smi$B_p <- lapply(rxnA$Products, get.smiles)
+    }
+    
+    .calcSimilarity (fpA_r, fpA_p, fpB_r, fpB_p, reversible, algo, sim.method, verbose, smi)
+  }
 }
 
 .makeFP <- function (mol, fp.type, fp.mode, fp.depth, fp.size, cache) {
@@ -213,13 +231,13 @@
   fp
 }
 
-.calcSimilarity <- function (fpA_r, fpA_p, fpB_r, fpB_p, reversible, algo, sim.method, verbose = F) {
+.calcSimilarity <- function (fpA_r, fpA_p, fpB_r, fpB_p, reversible, algo, sim.method, verbose = F, smiles = NULL) {
   maxRS <- FALSE
   if (algo == 'msim_max') {
     algo <- 'msim'
     maxRS <- TRUE
   }
-  if (algo == 'msim') {
+  if (algo == 'msim') {    
     lenA_r <- length(fpA_r)
     lenB_r <- length(fpB_r)
     lenA_p <- length(fpA_p)
@@ -246,7 +264,34 @@
     }
     
     if (verbose) {
-      if(straight > cross) {
+      cat('RCT1\n')
+      cat('- React(s)\n')
+      i <- 1
+      for (mol in smiles$A_r) {
+        cat('\t\t', paste(i, mol, sep='\t'), '\n')
+        i <- i+1
+      }
+      cat('- Prod(s)\n')
+      i <- 1
+      for (mol in smiles$A_p) {
+        cat('\t\t', paste(i, mol, sep='\t'), '\n')
+        i <- i+1
+      }
+      cat('RCT2\n')
+      cat('- React(s)\n')
+      i <- 1
+      for (mol in smiles$B_r) {
+        cat('\t\t', paste(i, mol, sep='\t'), '\n')
+        i <- i+1
+      }
+      cat('- Prod(s)\n')
+      i <- 1
+      for (mol in smiles$B_p) {
+        cat('\t\t', paste(i, mol, sep='\t'), '\n')
+        i <- i+1
+      }
+      cat('\n')
+      if(straight >= cross) {
         if (!maxRS) {
           if (lenA_r > lenDFrr) {
             ids <- c(1:lenA_r)
@@ -283,9 +328,9 @@
             }
           }
         }
-        colnames(dfrr) <- c('Rct1-ReactID', 'Rct2-ReactID', 'Similarity')
+        colnames(dfrr) <- c('RCT1-React', 'RCT2-React', 'Similarity')
         row.names(dfrr) <- c(1:length(dfrr[[1]]))
-        colnames(dfpp) <- c('Rct1-ProdID', 'Rct2-ProdID', 'Similarity')
+        colnames(dfpp) <- c('RCT1-Prod', 'RCT2-Prod', 'Similarity')
         row.names(dfpp) <- c(1:length(dfpp[[1]]))
         print(dfrr, row.names = F)
         print(dfpp, row.names = F)
@@ -326,15 +371,19 @@
             }
           }
         }
-        colnames(dfrp) <- c('Rct1-ReactID', 'Rct2-ProdID', 'Similarity')
+        colnames(dfrp) <- c('RCT1-React', 'RCT2-Prod', 'Similarity')
         row.names(dfrp) <- c(1:length(dfrp[[1]]))
-        colnames(dfpr) <- c('Rct1-ProdID', 'Rct2-ReactID', 'Similarity')
+        colnames(dfpr) <- c('RCT1-Prod', 'RCT2-React', 'Similarity')
         row.names(dfpr) <- c(1:length(dfpr[[1]]))
+        
         print(dfrp, row.names = F)
         print(dfpr, row.names = F)
       }
+      cat('\n')
+      cat('Reaction similarity:\t', ifelse(straight >= cross, straight, cross), '\n\n')
     }
-    ifelse(straight > cross, straight, cross)
+    
+    ifelse(straight >= cross, straight, cross)
   } else if (algo == 'rsim') {
     fpAR <- .addFP(fpA_r)
     fpAP <- .addFP(fpA_p)
@@ -361,6 +410,8 @@
         cat('Rct1-Reactant(s) |  Rct2-Product(s):', simRP, '\n')
         cat('Rct1-Product(s)  | Rct2-Reactant(s):', simPR, '\n')
       }
+      cat('\n')
+      cat('Reaction similarity:\t', ifelse (simRRPP > simRPPR, simRRPP, simRPPR), '\n\n')
     }
     ifelse (simRRPP > simRPPR, simRRPP, simRPPR)
   } else if (algo == 'rsim2') {
@@ -368,36 +419,43 @@
     fpB <- .addFP(c(fpB_r, fpB_p))
     
     simR <- .calcDistance(fpA, fpB, sim.method = sim.method)
+    
+    if (verbose) {
+      cat('\n')
+      cat('Reaction similarity:\t', simR, '\n\n')
+    }
+    
+    simR
   }
 }
 
 .calcSimMapping <- function (fpA, fpB, sim.method) {
-  dfSIM <- data.frame()
-  indexL2 <- 1:length(fpB)
-  for (i in 1:length(fpA)) {
-    sims <- lapply(fpB, .calcDistance, fpA = fpA[[i]], sim.method)
-    
-    d1 <- data.frame(i, indexL2, unlist((sims)))
-    colnames(d1) <- c('ID1', 'ID2', 'SIMILARITY')
-    dfSIM <- rbind(dfSIM, d1)
-  }
+  
+  dfSIM <- expand.grid(1:length(fpA), 1:length(fpB))
+  SIM <- mapply(function(i, j) {.calcDistance(fpA = fpA[[i]], fpB = fpB[[j]], sim.method)}, dfSIM[,1], dfSIM[,2])
+  dfSIM$SIM <- SIM
+  colnames(dfSIM) <- c('ID1', 'ID2', 'SIMILARITY')
+  
   dfSIM <- dfSIM[order(-dfSIM$SIMILARITY),]
   
-  dfSimMapped <- data.frame()
-  while (nrow(dfSIM) != 0) {
-    id1 = dfSIM[1,1]
-    id2 = dfSIM[1,2]
+  dfSIM$FLAG <- TRUE
+  itr <- 1
+  while (itr <= nrow(dfSIM)) {
+    id1 = dfSIM[itr,1]
+    id2 = dfSIM[itr,2]
     
-    dfSimMapped <- rbind(dfSimMapped, dfSIM[1,])
+    dfSIM[dfSIM$ID1 == id1 | dfSIM$ID2 == id2, 4] <- FALSE
+    dfSIM[itr, 4] <- TRUE
     
-    dfSIM <- dfSIM[dfSIM$ID1 != id1 & dfSIM$ID2 != id2,]
+    dfSIM <- dfSIM[dfSIM$FLAG == TRUE,]
+    itr <- itr + 1
   }
-  dfSimMapped
+  dfSIM <- dfSIM[,1:3]
 }
 
 .addFP <- function (fpList) {
   if (class(fpList[[1]]) == 'featvec') {
-    featrs_map <- new.env(hash = T)
+    featrs_map <- new.env(parent = emptyenv(), hash = T)
     for (fp in fpList) {
       for (featr in fp@features) {
         f <- fingerprint::feature(featr)
@@ -435,13 +493,13 @@
     stop('Inputs should be of \'featvec\' (S4 class) type.')
   }
   
-  featrs_mapA <- new.env(hash = T)
+  featrs_mapA <- new.env(parent = emptyenv(), hash = T)
   for (featr in fpA@features) {
     f <- fingerprint::feature(featr)
     c <- fingerprint::count(featr)
     featrs_mapA[[f]] <- c
   }
-  featrs_mapB <- new.env(hash = T)
+  featrs_mapB <- new.env(parent = emptyenv(), hash = T)
   for (featr in fpB@features) {
     f <- fingerprint::feature(featr)
     c <- fingerprint::count(featr)
@@ -465,7 +523,7 @@
     stop('Inputs should be of \'featvec\' (S4 class) type.')
   }
   
-  featrs_mapA <- new.env(hash = T)
+  featrs_mapA <- new.env(parent = emptyenv(), hash = T)
   sumA <- 0
   for (featr in fpA@features) {
     f <- fingerprint::feature(featr)
@@ -474,7 +532,7 @@
     sumA <- sumA + (c * c)
   }
   sumB <- 0
-  featrs_mapB <- new.env(hash = T)
+  featrs_mapB <- new.env(parent = emptyenv(), hash = T)
   for (featr in fpB@features) {
     f <- fingerprint::feature(featr)
     c <- fingerprint::count(featr)

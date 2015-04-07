@@ -1,0 +1,24 @@
+2015-04-07 (v1.0.1)
+  * inst/RheaData_v60.txt: Updated Rhea database to version 60.
+
+  * man/rs.makeDB.Rd: Updated version of Rhea database. Updated references.
+
+  * man/rs.mask.Rd: Updated man entry to reflect changes in the rs.mask and
+  ms.mask functions.
+
+  * R/RxnSim.R (makeDB): 
+    - Replaced read.delim with fread from data.table package in rs.makeDB
+    function.
+    - Handled error 'Too many paths generate...' arising from cdk. Removes
+    reaction from database.
+
+  * R/RxnSim.R (computeDB): optimization of code to avoid use of rbind.
+
+  * R/RxnSimHelper.R (.similarity):
+    - Handled error 'Too many paths generate...' arising from cdk. Returns NaN.
+    - Enhanced verbose mode to print compound smiles.
+
+  * R/RxnSim.R (.calcSimMapping): optimization of code to avoid use of rbind.
+
+  * R/RxnSimMask.R: Introduced option to standardize and add explicit hydrogens
+  in ms.mask and rs.mask functions.
