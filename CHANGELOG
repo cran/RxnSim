@@ -1,3 +1,7 @@
+2017-06-21 (v1.0.2)
+  * R/RxnSimMask.R: Replaced removeAtom(int) function by remove(IAtomContainer); removeAtom(int) is no longer available in cdk v2.0.
+  
+--------------------------------------------------------------------
 2015-04-07 (v1.0.1)
   * inst/RheaData_v60.txt: Updated Rhea database to version 60.
 

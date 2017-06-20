@@ -9,6 +9,8 @@
   }
   
   mapping <- sort(map$mapping[[1]], TRUE)
+  newAtomContainer <- .jnew('org/openscience/cdk/AtomContainer')
+  
   for (atomNo in mapping) {
     atom <- .jcall(mol, 'Lorg/openscience/cdk/interfaces/IAtom;', 'getAtom', atomNo)
     connectedAtoms <- as.list(.jcall(mol, 'Ljava/util/List;', 'getConnectedAtomsList', atom))
@@ -23,10 +25,10 @@
         }
       }
     }
+    .jcall(newAtomContainer, 'V', 'addAtom', atom)
   }
-  for(atomNo in mapping) {
-    .jcall(mol, 'V', 'removeAtom', atomNo)
-  }
+  nAC <- .jcast(newAtomContainer, 'org/openscience/cdk/interfaces/IAtomContainer')
+  .jcall(mol, 'V', 'remove', nAC)
 }
 
 .meta.mask <- function(substructure, mask, mol, recursive) {
