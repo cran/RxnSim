@@ -1,5 +1,17 @@
+2017-07-21
+  * R/RxnSimHelper.R (.makeFP): Update get.smiles to match updates to rCDK.
+  
+  * inst/DBRheaData_v83.txt: Updated Rhea database to version 83.
+  
+  * inst/Metadata.txt: Updated Metadata file to version 83.
+  
+  * man/rs.makeDB.Rd: Updated version of Rhea database. Updated references.
+
+--------------------------------------------------------------------
+
 2017-06-21 (v1.0.2)
-  * R/RxnSimMask.R: Replaced removeAtom(int) function by remove(IAtomContainer); removeAtom(int) is no longer available in cdk v2.0.
+  * R/RxnSimMask.R: Replaced removeAtom(int) function by remove(IAtomContainer);
+  removeAtom(int) is no longer available in cdk v2.0.
   
 --------------------------------------------------------------------
 2015-04-07 (v1.0.1)

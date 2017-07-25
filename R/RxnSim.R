@@ -8,7 +8,7 @@
   .javaObj.env$acm <- 'org.openscience.cdk.tools.manipulator.AtomContainerManipulator'
   .fp.env$fp_map <- new.env(parent = emptyenv(), hash = T)
   .global.env$DefaultDB <- paste(libname, pkgname, 'DB/Metadata.txt', sep = '/')
-  .global.env$Rheav60 <- paste(libname, pkgname, 'DB/RheaData_v60.txt', sep = '/')
+  .global.env$Rhea <- paste(libname, pkgname, 'DB/RheaData_v83.txt', sep = '/')
 }
 
 rs.clearCache <- function () {
@@ -292,8 +292,8 @@ rs.makeDB <- function (txtFile, header = F, sep = '\t', standardize = T, explici
   fp.mode <- tolower(fp.mode)
   
   if (missing(txtFile)) {
-    msg <- paste ("DB text file not provided, using sample DB (extracted from Rhea v.60).\n",
-                  "For complete dataset use: ", .global.env$Rheav60, sep = '')
+    msg <- paste ("DB text file not provided, using sample DB (extracted from Rhea v.83).\n",
+                  "For complete dataset use: ", .global.env$Rhea, sep = '')
     warning(msg, call. = F, immediate. = T)
     txtFile <- .global.env$DefaultDB
   }

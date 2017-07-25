@@ -217,7 +217,7 @@
 
 .makeFP <- function (mol, fp.type, fp.mode, fp.depth, fp.size, cache) {
   if (!missing(cache) && !is.null(cache)) {
-    smi <- get.smiles(mol, type = 'unique')
+    smi <- get.smiles(mol, smiles.flavors(c('Unique')))
     fp <- cache[[smi]]
     if (is.null(fp)) {
       fp <- get.fingerprint(mol, type = fp.type, fp.mode = fp.mode, depth = fp.depth, 
