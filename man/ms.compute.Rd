@@ -1,6 +1,7 @@
 \name{ms.compute}
 \alias{ms.compute}
 \alias{ms.compute.sim.matrix}
+\alias{ms.compute.PCA}
 
 \title{Computes Similarity of Molecules}
 
@@ -9,12 +10,15 @@ Computes chemical similarity between two (or more) input molecules.\cr
 }
 
 \usage{
-ms.compute (molA, molB, format = 'smiles', standardize = T, explicitH = F, sim.method =
-            'tanimoto', fp.type = 'extended', fp.mode = 'bit', fp.depth = 6, fp.size = 
-            1024, fpCached = F)
-ms.compute.sim.matrix (molA, format = 'smiles', standardize = T, explicitH = F,
+ms.compute (molA, molB, format = 'smiles', standardize = TRUE, explicitH = FALSE,
             sim.method = 'tanimoto', fp.type = 'extended', fp.mode = 'bit', fp.depth = 6,
-            fp.size = 1024, clearCache = T)
+            fp.size = 1024, fpCached = FALSE)
+ms.compute.sim.matrix (molA, format = 'smiles', standardize = TRUE, explicitH = FALSE,
+            sim.method = 'tanimoto', fp.type = 'extended', fp.mode = 'bit', fp.depth = 6,
+            fp.size = 1024, clearCache = TRUE)
+ms.compute.PCA(molA, format = 'smiles', standardize = TRUE, explicitH = FALSE, 
+            fp.type = 'extended', fp.mode = 'bit', fp.depth = 6, fp.size = 1024,
+            clearCache = TRUE)
 }
 
 \arguments{
@@ -36,11 +40,13 @@ ms.compute.sim.matrix (molA, format = 'smiles', standardize = T, explicitH = F,
   Returns similarity value(s).
   \item{\code{ms.compute}}{returns a similarity value.}
   \item{\code{ms.compute.sim.matrix}}{returns a \eqn{m \times m} symmetric matrix of similarity values. \eqn{m} is the length of the input list.}
+  \item{\code{ms.compute.PCA}}{returns prcomp object.}
 }
 
 \details{
 See \code{\link[RxnSim:rs.compute]{rs.compute}} functions, for details for fingerprints and similarity matrices.
 \code{ms.compute} can use fingerprint caching by enabling \code{fpCached} option. \code{ms.compute} and \code{ms.compute.sim.matrix} use same cache as \code{rs.compute} and other functions in the package.
+\code{ms.compute.PCA} computes PCA based on the fingerprints using prcomp funtion.
 }
 
 \examples{

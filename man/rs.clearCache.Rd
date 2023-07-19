@@ -4,11 +4,16 @@
 \title{Clears Fingerprint Cache}
 
 \description{
-Clears fingerprint cache. \code{rs.clearCache} should be called before 
+Clears fingerprint cache. \code{rs.clearCache} should be called before fingerprint
+method (or related properties) are modified.
 }
 
 \usage{
 rs.clearCache()
+}
+
+\value{
+  No return value
 }
 
 \author{

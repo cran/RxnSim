@@ -1,3 +1,9 @@
+2023-07-15
+  * R/RxnSim.R (ms.compute.PCA): Implemented chemical space exploration based
+  on a PCA of fingerprint vectors.
+
+--------------------------------------------------------------------
+
 2017-07-21
   * R/RxnSimHelper.R (.makeFP): Update get.smiles to match updates to rCDK.
   

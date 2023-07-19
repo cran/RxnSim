@@ -15,17 +15,20 @@ Computes similarity between two (or more) input reactions.\cr
 }
 
 \usage{
-rs.compute (rxnA, rxnB, format = 'rsmi', standardize = T, explicitH = F, reversible = T, 
-            algo = 'msim', sim.method = 'tanimoto', fp.type = 'extended', fp.mode = 'bit',
-            fp.depth = 6, fp.size = 1024, verbose = F, fpCached = F)
-rs.compute.list (rxnA, rxnB, format = 'rsmi', standardize = T, explicitH = F, reversible
-            = T, algo = 'msim', sim.method = 'tanimoto', fp.type = 'extended', fp.mode 
-            = 'bit',fp.depth = 6, fp.size = 1024, clearCache = T)
-rs.compute.sim.matrix (rxnA, format = 'rsmi', standardize = T, explicitH = F, reversible
-            = T, algo = 'msim', sim.method = 'tanimoto', fp.type = 'extended', fp.mode
-            = 'bit', fp.depth = 6, fp.size = 1024, clearCache = T)
-rs.compute.DB (rxnA, DB, format = 'rsmi', ecrange = '*', reversible = T, algo = 'msim',
-            sim.method = 'tanimoto', sort = T, fpCached = F)
+rs.compute (rxnA, rxnB, format = 'rsmi', standardize = TRUE, explicitH = FALSE, 
+            reversible = TRUE, algo = 'msim', sim.method = 'tanimoto', 
+            fp.type = 'extended', fp.mode = 'bit', fp.depth = 6, fp.size = 1024,
+            verbose = FALSE, fpCached = FALSE)
+rs.compute.list (rxnA, rxnB, format = 'rsmi', standardize = TRUE, explicitH = FALSE,
+              reversible = TRUE, algo = 'msim', sim.method = 'tanimoto',
+              fp.type = 'extended', fp.mode = 'bit',fp.depth = 6, fp.size = 1024,
+              clearCache = TRUE)
+rs.compute.sim.matrix (rxnA, format = 'rsmi', standardize = TRUE, explicitH = FALSE,
+                    reversible = TRUE, algo = 'msim', sim.method = 'tanimoto', 
+                    fp.type = 'extended', fp.mode = 'bit', fp.depth = 6, fp.size = 1024,
+                    clearCache = TRUE)
+rs.compute.DB (rxnA, DB, format = 'rsmi', ecrange = '*', reversible = TRUE,
+              algo = 'msim', sim.method = 'tanimoto', sort = TRUE, fpCached = FALSE)
 }
 
 \arguments{
@@ -123,7 +126,7 @@ Same cache is used for all functions.
 rct1 <- 'C(=O)C1(=CC=CC=C1).O=O.[OH2]>>[H+].C(C1(C=CC=CC=1))([O-])=O.OO'
 rct2 <- 'C(C=CC1(=CC=CC=C1))=O.O=O.[OH2]>>[H+].C(=O)([O-])C=CC1(=CC=CC=C1).OO'
 }
-\dontrun{Reaction similarity using \'msim\' algorithm}
+# Reaction similarity using msim algorithm
 rs.compute(rct1, rct2, verbose = TRUE)
 }
 
@@ -140,7 +143,7 @@ Varun Giri \email{varungiri@gmail.com}
 }
 
 \note{
-While using fingerprint caching (by setting \code{fpCached = T} in \code{rs.compute} and \code{rs.compute.DB} or \code{clearCache = F} in \code{rs.compute.list} and \code{rs.compute.sim.matrix}), ensure that the fingerprints are generated using same parameters values (\code{fp.type}, \code{fp.mode}, \code{fp.depth} and \code{fp.size}). To reset cache, call \code{\link[RxnSim:rs.clearCache]{rs.clearCache}}.
+While using fingerprint caching (by setting \code{fpCached = TRUE} in \code{rs.compute} and \code{rs.compute.DB} or \code{clearCache = FALSE} in \code{rs.compute.list} and \code{rs.compute.sim.matrix}), ensure that the fingerprints are generated using same parameters values (\code{fp.type}, \code{fp.mode}, \code{fp.depth} and \code{fp.size}). To reset cache, call \code{\link[RxnSim:rs.clearCache]{rs.clearCache}}.
 
 \code{rs.compute.DB} uses same parameter values for creating fingerprint as used for (and stored with) DB object (created using \code{\link[RxnSim:rs.makeDB]{rs.makeDB}}) passed as argument.
 }

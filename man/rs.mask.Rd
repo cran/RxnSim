@@ -11,10 +11,10 @@ Replaces a sub-structure, provided as SMILES or SMARTS, with the given mask.\cr
 }
 
 \usage{
-rs.mask (substructure, mask, reaction, format = 'rsmi', standardize = T,
-         explicitH = F, recursive = F)
-ms.mask (substructure, mask, molecule, format = 'smiles', standardize = T,
-         explicitH = F, recursive = F)
+rs.mask (substructure, mask, reaction, format = 'rsmi', standardize = TRUE,
+         explicitH = FALSE, recursive = FALSE)
+ms.mask (substructure, mask, molecule, format = 'smiles', standardize = TRUE,
+         explicitH = FALSE, recursive = FALSE)
 }
 
 \arguments{

@@ -8,9 +8,9 @@ Reads and parses input text file containing reaction smiles into reaction databa
 }
 
 \usage{
-rs.makeDB (txtFile, header = F, sep = '\t', standardize = T, explicitH = F, fp.type = 
-          'extended', fp.mode = 'bit', fp.depth = 6, fp.size = 1024, useMask = F,
-          maskStructure, mask, recursive = F)
+rs.makeDB (txtFile, header = FALSE, sep = '\t', standardize = TRUE, explicitH = FALSE,
+          fp.type = 'extended', fp.mode = 'bit', fp.depth = 6, fp.size = 1024,
+          useMask = FALSE, maskStructure, mask, recursive = FALSE)
 }
 
 \arguments{

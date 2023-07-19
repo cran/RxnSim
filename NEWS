@@ -1,2 +1,8 @@
-v1.0.2 - Patched to match changes in cdk v2.0.
-v1.0.1 - Updated Rhea database to v.60. Opitimized similarity computations.
+Changes in version 1.0.4
+ - Implemented ms.compute.PCA for chemical space exploration based on a PCA on fingerprints.
+
+Changes in version 1.0.2
+ - Patched to match changes in cdk v2.0.
+
+Changes in version 1.0.1
+ - Updated Rhea database to v.60. Opitimized similarity computations.

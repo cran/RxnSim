@@ -39,9 +39,9 @@ Maintainer: Varun Giri
 }
 
 \examples{
-\dontrun{Reaction similarity}
+# Reaction similarity
 rs.compute('CCCO>>CCC=O', 'CC(O)C>>CC(=O)C')
 
-\dontrun{Metabolite similarity}
+# Metabolite similarity
 ms.compute('CCC=O', 'CC(O)C')
 }
